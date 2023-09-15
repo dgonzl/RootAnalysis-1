@@ -52,6 +52,7 @@ private:
   void plotGMTVsOther(int iPt, std::string sysType="BMTF");
   void plotTandPEfficiency(const std::string & sysType,  std::string hName);
   void plotSingleHistogram(std::string hName,  TString xlabel= "Xlabel"); 
+  void plotSingle3DHistogram(std::string hName,TString xlabel= "Xlabel",TString ylabel="Ylabel",TString zlabel ="Zlabel" );
 
 
   TH2F* makeRateWeights(TH2 *hOrig);

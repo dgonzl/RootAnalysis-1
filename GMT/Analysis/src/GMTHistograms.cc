@@ -98,7 +98,7 @@ std::string GMTHistograms::getTemplateName(const std::string& name){
   if(name.find("PtTag")!=std::string::npos) templateName = "h1DPtTemplate";  
   if(name.find("AbsEta")!=std::string::npos) templateName = "h1DAbsEtaTemplate";  
   if(name.find("AbsEtaProbe")!=std::string::npos) templateName = "h1DAbsEtaProbeTemplate";  
-  
+  if(name.find("h3D_PtVsEtaVsDeltaPhi")!=std::string::npos) templateName = "h3DPtVsEtaVsDeltaPhiTemplate";
   
   if(!templateName.size()) std::cout<<name<<std::endl;
   return templateName;
@@ -120,6 +120,8 @@ void GMTHistograms::defineHistograms(){
  add1DHistogram("h1DAbsEtaTemplate","",60,0.0,2.4,file_);
  add1DHistogram("h1DAbsEtaProbeTemplate","",60,0.8,1.4,file_);
  
+//Th3D histogram 
+ add3DHistogram("h3DPtVsEtaVsDeltaPhiTemplate","",60,0,70,60,-3,3,60,0,1.7,file_);
 
  ///Efficiency histos
  add2DHistogram("h2DPtTemplate","",150,0,150,2,-0.5,1.5,file_);
@@ -176,6 +178,7 @@ void GMTHistograms::finalizeHistograms(){
   plotSingleHistogram("h1DPtTag"," P_{T} Muon [GeV/c]");
   plotSingleHistogram("h1DAbsEtaTag","#lbar#eta#lbar");
   plotSingleHistogram("h1DDiMuonMassTagProbe", "Z(#mu^{+}#mu^{-}) [GeV/c^{2}]");
+  plotSingle3DHistogram("h3D_PtVsEtaVsDeltaPhi","Pt^{Reco}","#eta^{Reco}","#Delta#phi^{Reco}");
 
  //// Plotting Gen vs Reco muon turn on curves
  for(int iPtCode=1;iPtCode<=30;++iPtCode){
@@ -699,5 +702,43 @@ void GMTHistograms::plotSingleHistogram(std::string hName,TString xlabel ){ //co
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
+void GMTHistograms::plotSingle3DHistogram(std::string hName,TString xlabel,TString ylabel,TString zlabel ){ 
+
+  TH3F* h3D = get3DHistogram(hName);
+  
+  if(!h3D) return;
+	
+  TCanvas* c = new TCanvas("AnyHistogram","AnyHistogram",
+			   800,800);
+
+  TLegend l(0.15,0.78,0.35,0.87,NULL,"brNDC");
+  l.SetTextSize(0.05);
+  l.SetFillStyle(4000);
+  l.SetBorderSize(0);
+  l.SetFillColor(10);
+
+  //TFile* f = TFile::Open("eventHist_2022_era_Prueba.root","UPDATE");
+
+  if(h3D) {
+    h3D->SetDirectory(myDirCopy);
+    //h3D->SetLineWidth(3);
+    //h3D->Scale(1.0/h3D->Integral());
+    h3D->SetXTitle(xlabel);
+    h3D->SetYTitle(ylabel);
+    h3D->SetZTitle(zlabel);
+    h3D->GetYaxis()->SetTitleOffset(1.8);
+    h3D->GetXaxis()->SetTitleOffset(1.8);
+    h3D->GetZaxis()->SetTitleOffset(1.4);
+    h3D->SetStats(kFALSE);
+    //h3D->Write();
+    //gStyle->SetPalette(kRainBow);
+    h3D->Draw("LEGO");
+    c->Print(TString::Format("fig_png/%s.png",hName.c_str()).Data());
+  }
+
+//f->Close();
+}
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 

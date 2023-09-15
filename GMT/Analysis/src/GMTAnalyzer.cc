@@ -200,6 +200,13 @@ void GMTAnalyzer::fillHistosForMuon(const ROOT::Math::LorentzVector<ROOT::Math::
 }
 // //////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////
+void GMTAnalyzer::Propagatio_vx_st2(const MuonObj &acandidate){
+    double delta_phi = acandidate.l1phi() - acandidate.phi();
+    std::string tmpName = "h3D_PtVsEtaVsDeltaPhi";
+    myHistos_->fill3DHistogram(tmpName, acandidate.pt(),acandidate.eta(), delta_phi);
+}
+
+// //////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////
 bool GMTAnalyzer::analyze(const EventProxyBase& iEvent){
    
@@ -213,14 +220,19 @@ bool GMTAnalyzer::analyze(const EventProxyBase& iEvent){
   myL1PhaseIIObjColl = myProxy.getL1PhaseIIObjColl();
   myGenObjColl = myProxy.getGenObjColl();
 
-  //////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
    /////////For  muonColl as Reference with L1////////////////////////////////
-   /////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////
   const std::vector<MuonObj> & myMuonColl = myMuonObjColl->getMuonObjs();
 
-  if(myMuonColl.size()!=2) return false;
-  //if(myMuonColl.empty()) return false;
-  
+  //if(myMuonColl.size()!=2) return false;
+  if(myMuonColl.empty()) return false;
+
+  ///////////Phi Propagation////////////////////////////
+  for (auto aMuonCand: myMuonColl){   
+      Propagatio_vx_st2(aMuonCand);
+  }
+  ////////////////////////////////////////////////
   MuonObj aTag =  myMuonColl.at(0);
   bool tagPass = aTag.pt()>20 && aTag.matchedisohlt();
   if(!tagPass) return true;

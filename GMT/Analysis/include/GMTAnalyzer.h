@@ -64,6 +64,8 @@ class GMTAnalyzer:public Analyzer{
   void fillRateHisto(const MuonObj & aRecoMuon,
                     const std::string & sysType,
 		                const std::string & selType);
+  
+  void Propagatio_vx_st2(const MuonObj & acandidate);
 
   bool passQuality(const L1Obj & aL1Cand,
 		              const std::string & sysType,
